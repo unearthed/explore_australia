@@ -38,6 +38,8 @@ $ which get_coverages
 
 You can run the test suite with `python setup.py test` from the package root directory.
 
+Head over to the `jupyter` folder to find notebooks to get you going with this data in Python.
+
 ## Targets: cleaned deposit locations
 
 As targets, we've provided 3034 deposit locations gleaned from Geoscience Australia's [Identified Mineral Resources database](http://www.ga.gov.au/scientific-topics/minerals/mineral-resources-and-advice/aimr). They're available as `data/deposit_locations.csv` and `data/deposit_locations.geo.json` respectively. Geoscience Australia also has a nice [poster showing these locations around Australia](http://www.ga.gov.au/webtemp/image_cache/GA6886.pdf).
