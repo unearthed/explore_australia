@@ -1,8 +1,8 @@
-""" file:    __init__.py (explore-generator)
-    author:  Jess Robertson, jess@unearthed.solutions
+""" file:    __init__.py (explore_australia)
+    author:  Jess Robertson, @jesserobertson
     date:    Wednesday, 02 January 2019
 
-    description: Init script for explore-generator
+    description: Init script for explore_australia
 """
 
 from ._version import __version__

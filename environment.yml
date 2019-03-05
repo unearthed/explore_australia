@@ -12,6 +12,11 @@ dependencies:
   - matplotlib
   - geopandas
   - scikit-learn
+  - pytest
+  - pytest-runner
+  - pytest-cov
+  - coverage
+  - pylint
   - pip:
     - pint
     - tqdm
