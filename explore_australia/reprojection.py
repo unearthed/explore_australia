@@ -6,11 +6,14 @@
 """
 
 from functools import partial
+import logging
+
 import pyproj
 from shapely.geometry import Polygon, MultiPolygon, MultiLineString, \
         LineString, LinearRing, Point, MultiPoint
 import numpy as np
 
+LOGGER = logging.getLogger('explore_australia')
 GEOJSON_PROJ = 'epsg:4326'  # Default/only projection used by GeoJSON
 
 def get_projector(from_crs, to_crs=None):
@@ -38,7 +41,7 @@ def get_projector(from_crs, to_crs=None):
                 try:
                     prjs[idx] = pyproj.Proj(init=prj)
                 except Exception as err:
-                    print("Can't handle {prj}: {err}")
+                    LOGGER.error("Can't handle {prj}: {err}")
                     raise err
             else:
                 prjs[idx] = pyproj.Proj(prj)

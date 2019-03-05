@@ -53,7 +53,6 @@ class TestRotation(unittest.TestCase):
         points3 = cartesian_to_geographic(cpoints2)
         self.assertEqual(points3.shape, points.shape)
         self.assertTrue(np.allclose(points3, points))
-        print('all ok!')
 
     def test_rotation(self):
         "Check rotation works ok"

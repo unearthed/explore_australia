@@ -5,11 +5,15 @@
     description: Coverage data getting
 """
 
+import logging
+
 from shapely.geometry import box
 from owslib.wcs import WebCoverageService
 import rasterio
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 import numpy as np
+
+LOGGER = logging.getLogger('explore_australia')
 
 def rotate_raster(input_raster, output_raster, angle, band=1):
     """
@@ -129,7 +133,7 @@ class CoverageService:
             output = f"{layer}.tif"
 
         # Make request
-        print(f'Getting coverage for {layer}')
+        LOGGER.debug(f'Getting coverage for {layer}')
         response = self.wcs.getCoverage(
             identifier=layer,
             bbox=self.snap_bounds(bbox, layer),
@@ -139,7 +143,7 @@ class CoverageService:
         # Dump to geotiff
         if response._response.ok:
             with open(output, 'wb') as sink:
-                print(f'Dumping to {output}')
+                LOGGER.debug(f'Dumping to {output}')
                 sink.write(response.read())
         else:
             raise IOError('Something went wrong getting raster!')

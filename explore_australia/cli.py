@@ -1,4 +1,5 @@
 import pathlib
+import logging
 
 import rasterio
 from rasterio import crs, warp
@@ -9,13 +10,19 @@ import numpy as np
 
 from .geometry import make_box, make_stamp
 from .rotation import rotate
+from .raster import rasterio_reprojection_meta
 from .utilities import omerc_projection
 from .endpoints import ASTER, GRAVITY, MAGNETICS, RADMAP, TOTAL_COVERAGES
 from . import CoverageService
 
-def get_stamp(output, wcs, stamp, centre, angle, distance, npoints=500):
+LOGGER = logging.getLogger('explore_australia')
+
+def get_stamp(output, wcs, stamp, centre, angle, distance,
+              npoints=500, remove_crs=False):
     """
     Get the raster in a given stamp area from a WCS
+
+    Warps the raster into a locally uniform oblique Mercator projection
 
     Parameters:
         output - the mane of the output tif file
@@ -25,6 +32,7 @@ def get_stamp(output, wcs, stamp, centre, angle, distance, npoints=500):
         angle - the angle to rotate the box through, in degrees
         distance - the approximate length of the sides of the box (in km)
         npoints - the number of points per side in the new stamp
+        remove_crs - if True, remove coordinate reference system before writing
     """
     # Get data
     try:
@@ -56,7 +64,8 @@ def get_stamp(output, wcs, stamp, centre, angle, distance, npoints=500):
             )
 
         # Dump output to file without CRS info
-        output_meta['crs'] = None
+        if remove_crs:
+            output_meta['crs'] = None
         with rasterio.open(output, 'w', **output_meta) as sink:
             sink.write(destination, 1)
     finally:

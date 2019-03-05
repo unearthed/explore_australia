@@ -37,12 +37,10 @@ class TestUtilities(unittest.TestCase):
         self.assertEqual(result.max(), 3)
 
         result = qclip(data, lower=0.25, upper=0.6, finite_only=False)[:4].astype(int) # skip nans
-        print(result)
         self.assertTrue(not any(np.isnan(result)))
         self.assertTrue(any(np.isfinite(result)))
         self.assertEqual(result.min(), 1)
         self.assertEqual(result.max(), 4)
-
 
 if __name__ == '__main__':
     unittest.main()
