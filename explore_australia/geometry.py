@@ -11,6 +11,7 @@ import pint
 import numpy as np
 
 from .reprojection import reproject
+from .rotation import rotate
 
 # Constances
 UNITS = pint.UnitRegistry()
@@ -91,3 +92,15 @@ def make_box(centre, distance, projection=None, output_projection=None, npoints=
         raise AssertionError("Invalid input/output projection specification")
 
     return shape
+
+def make_stamp(centre, angle=None, distance=25):
+    """
+    Make a rotated box with some angle and size
+
+    Parameters:
+        centre - the centre of the box, given as a shapely Point object
+        angle - the angle to rotate the box through, in degrees
+        distance - the approximate length of the sides of the box (in km)
+    """
+    angle = angle or np.random.uniform(0, 360)
+    return rotate(make_box(centre, distance=distance), centre, angle)

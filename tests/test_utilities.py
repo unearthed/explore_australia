@@ -10,7 +10,7 @@ from itertools import product
 
 import numpy as np
 
-from explore_generator.utilities import qclip
+from explore_australia.utilities import qclip
 
 class TestUtilities(unittest.TestCase):
 

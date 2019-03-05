@@ -29,12 +29,14 @@ running install
 Successfully installed explore_australia
 ```
 
-This should install the python package and also the `get_coverages` CLI tool.
+This should install the python package and also the `explorer_coverage` CLI tool.
 
 ```bash
-$ which get_coverages
+$ which explorer_coverage
 # should show where this is installed, probably in .../conda/bin
 ```
+
+You can run the test suite with `python setup.py test` from the package root directory.
 
 ## Targets: cleaned deposit locations
 
@@ -64,8 +66,8 @@ You can use the CLI to pull out aligned coverages for any piece of Australia tha
 If you've got a particular area that you'd like to look at (e.g. over a known deposit), then you can pull out a box of (roughly) size `distance` using:
 
 ```bash
-$ get_coverages --help
-Usage: get_coverages [OPTIONS] NAME
+$ explorer_coverage --help
+Usage: explorer_coverage [OPTIONS] NAME
 
   Get coverages for a given centre and angle
 
@@ -76,7 +78,7 @@ Options:
   --angle FLOAT       angle to rotate
   --help              Show this message and exit.
 
-$ get_coverages --lon=122.169999 --lat=-32.42 --angle=239 test_output
+$ explorer_coverage --lon=122.169999 --lat=-32.42 --angle=239 test_output
 # will loop through and grab tifs from WCS
 
 # Show all the downloaded geotiffs

@@ -13,15 +13,15 @@ import numpy as np
 import rasterio
 import requests
 
-from explore_generator.coverage import read_to_maskedarray, rotate_raster
-from explore_generator import CoverageService
+from explore_australia.coverage import read_to_maskedarray, rotate_raster
+from explore_australia import CoverageService
 
 # Check for internet connection by connection to Google DNS
 try:
-    requests.get('http://8.8.8.8')
-    has_connection = True
+    requests.get('http://8.8.8.8', timeout=1)
+    HAS_CONNECTION = True
 except requests.ConnectionError:
-    has_connection = False
+    HAS_CONNECTION = False
 
 class TestCoverageIO(unittest.TestCase):
     "Tests for coverage utility functions"
@@ -78,6 +78,7 @@ class TestRotateRaster(unittest.TestCase):
                 mask = (~data.mask * 255).astype('uint8')
                 sink.write_mask(mask)
 
+    @unittest.skip('Not implemented')
     def test_rotate_raster_masked(self):
         "Check rotation with masked arrays works"
         try:
@@ -102,7 +103,7 @@ class TestRotateRaster(unittest.TestCase):
                         path.unlink()
                     self.assertFalse(path.exists())
 
-@unittest.skipIf(not has_connection, 'No connection')
+@unittest.skipIf(not HAS_CONNECTION, 'No connection')
 class TestCoverageService(unittest.TestCase):
     "Tests for coverage service access"
 

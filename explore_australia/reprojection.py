@@ -87,7 +87,11 @@ def reproject(geom, from_crs=None, to_crs=None, projector=None):
         'MultiPoint': _multipoint
     }
     try:
-        return mapping[geom.geom_type](geom, projector=projector)
+        geom_type = geom.geom_type
+        return mapping[geom_type](geom, projector=projector)
+    except AttributeError:
+        msg = "{} doesn't appear to be a shapely geometry".format(geom)
+        raise ValueError(msg)
     except KeyError:
         msg = "Don't know how to reproject a {}".format(geom.geom_type)
         raise ValueError(msg)

@@ -1,5 +1,5 @@
 """ file:    endpoints.py (explore_australia)
-    author:  Jess Robertson, jess@unearthed.solutions
+    author:  Jess Robertson, @jesserobertson
     date:    Tuesday, 05 March 2019
 
     description: Endpoint locations for geophysical coverages on NCI
@@ -38,3 +38,5 @@ GRAVITY = {
     'isostatic_residual_gravity_anomaly': 'http://dap-wms.nci.org.au/thredds/wcs/rr2/geophysics/onshore_geodetic_Isostatic_Residual_v2_2016/onshore_geodetic_Isostatic_Residual_v2_2016.nc',
     'bouger_gravity_anomaly': 'http://dap-wms.nci.org.au/thredds/wcs/rr2/geophysics/onshore_geodetic_Complete_Bouguer_2016/onshore_geodetic_Complete_Bouguer_2016.nc',
 }
+
+TOTAL_COVERAGES = len(ASTER) + len(GRAVITY) + len(RADMAP) + len(MAGNETICS)

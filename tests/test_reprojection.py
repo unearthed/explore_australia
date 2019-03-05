@@ -11,7 +11,7 @@ from shapely.geometry import Point, MultiPoint, LineString, MultiLineString, \
     GeometryCollection, Polygon, MultiPolygon
 import numpy as np
 
-from explore_generator.reprojection import reproject, get_projector
+from explore_australia.reprojection import reproject, get_projector
 
 class TestReprojection(unittest.TestCase):
 

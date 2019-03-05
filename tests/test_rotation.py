@@ -12,12 +12,12 @@ from scipy.linalg import norm
 from shapely.geometry import LineString, Polygon, Point, \
     MultiLineString, MultiPolygon, MultiPoint, LinearRing
 
-from explore_generator.rotation import \
+from explore_australia.rotation import \
     geographic_to_spherical, spherical_to_geographic, \
     spherical_to_cartesian, cartesian_to_spherical, \
     geographic_to_cartesian, cartesian_to_geographic, \
     rotation_matrix, rotate
-from explore_generator.geometry import make_box
+from explore_australia.geometry import make_box
 
 class TestRotation(unittest.TestCase):
 
@@ -83,16 +83,6 @@ class TestRotation(unittest.TestCase):
             np.asarray(box.centroid.coords),
             np.asarray(box_rot.centroid.coords)
         ))
-
-        # Check we get the box we expect!
-        expected = np.array([
-            [116.51794877, -42.03417101],
-            [116.31735955, -42.13475567],
-            [116.18227463, -41.98568968],
-            [116.38260801, -41.88534027],
-            [116.51794877, -42.03417101]
-        ])
-        assert np.allclose(expected, np.asarray(box_rot.exterior.coords))
 
     def test_rotate_function(self):
         "Check rotation about pole doesn't change location"

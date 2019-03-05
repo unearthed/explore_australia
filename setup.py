@@ -34,7 +34,7 @@ DEV_REQUIREMENTS = [
 setup(
     name='explore_australia',
     version="0.1.0",
-    description='Data generator for machine learning',
+    description='Data generator for machine learning on exploration data',
     long_description='making something good here',
     author='Jess Robertson',
     author_email='jess@unearthed.solutions',
@@ -67,7 +67,7 @@ setup(
     # Some entry points for running CLIs
     entry_points={
         'console_scripts': [
-            'get_coverages = explore_generator:cli.get_coverages',
+            'explorer_coverage = explore_australia:cli.get_coverages',
         ],
     }
 )

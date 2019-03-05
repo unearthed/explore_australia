@@ -13,7 +13,7 @@ from shapely.geometry import Point, MultiPolygon
 import numpy as np
 import pyproj
 
-from explore_generator.geometry import make_box
+from explore_australia.geometry import make_box
 
 EPSG_3112_BOUNDS = (-2918276.3772, -5287521.9260, 2362935.9369, -1372651.4100)
 
@@ -60,7 +60,7 @@ class TestStamp(unittest.TestCase):
                 ])
 
                 # Check total areas - should be roughly size of squares
-                expected = (2 * distance * 1000) ** 2 * nsquares # in m^2
+                expected = (distance * 1000) ** 2 * nsquares # in m^2
                 self.assertTrue(np.isclose(polys.area, expected, rtol=1e-1))
 
     def test_make_box_no_proj(self):
@@ -95,7 +95,7 @@ class TestStamp(unittest.TestCase):
                 ])
 
                 # Check total areas - should be roughly size of squares
-                expected = (2 * distance * 1000) ** 2 * nsquares # in m^2
+                expected = (distance * 1000) ** 2 * nsquares # in m^2
                 self.assertTrue(np.isclose(polys.area, expected, rtol=1e-1))
 
 if __name__ == '__main__':
