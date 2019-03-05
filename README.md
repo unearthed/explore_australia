@@ -38,20 +38,24 @@ $ which get_coverages
 
 ## Cleaned deposit locations
 
-As targets, we've provided 3034 deposit locations gleaned from Geoscience Australia's [Identified Mineral Resources database](http://www.ga.gov.au/scientific-topics/minerals/mineral-resources-and-advice/aimr).
+As targets, we've provided 3034 deposit locations gleaned from Geoscience Australia's [Identified Mineral Resources database](http://www.ga.gov.au/scientific-topics/minerals/mineral-resources-and-advice/aimr). They're available as `data/deposit_locations.csv` and `data/deposit_locations.geo.json` respectively.
 
-To clean this up and remove deposits that are unlikely to be useful targets we've done the following:
-- Remove 'uninteresting' or difficult to predict commodity types like opal, coal, diamond etc
-- Concatenated the commodity types into some larger groups for prediction purposes (e.g. illmenite -> Ti, hematite -> Fe)
+To make it easier to target commodity types and remove deposits that are unlikely to be useful targets we've done the following:
+- Remove very rare deposits like diamond or 'uninteresting' deposits like opal or coal (who cares about silica or carbon?)
+- Concatenated the commodity types into some larger groups for prediction purposes (e.g. illmenite -> Ti, hematite -> Fe). Also combined rare-earth (Sc, Y, La, Ce, Pr, Nd, Pm, Sm, Eu, Gd, Tb, Dy, Ho, Er, Yb, Lu, REO, REE, Xen, Mnz) and platinum-group element (PGE, Pt, Pd, Os, Rh, In, Ir, Re, Ru, Nb) resources into `REE` and `PGE` resources respectively.
 - Streamlined the commodity type labels into a semicolon-delimited list (;)
 
 and provided the latitude and longitude of these deposits in WGS84 longitude/latitude (epsg:4326).
+
+![Deposit locations across Australia](https://github.com/jesserobertson/explore_australia/blob/master/resources/deposit_locations.png?raw=true)
 
 ## Getting geophysical coverage data
 
 Most of the geophysical data for all of Australia is pretty big so we've created a couple of Python functions to pull the data from their [web coverage service endpoints](http://nci.org.au/services/nci-national-research-data-collection/geosciences/) - basically a little wrapper around [owslib](https://github.com/geopython/OWSLib).
 
 All of the endpoints are stored in `explorer_australia/endpoints.py` (note you can also load these in any decent GIS package as well as see them in [nationalmap.gov.au](https://nationalmap.gov.au)). We've provided endpoints for continent-wide magnetics (TMI and VRTP), gravity (isostatic residual and bouger anomaly), a number of ASTER products (which map surface mineralogy at a 30 m scale), and radiometric data (K, Th, U and total dose).
+
+![Coverage examples](https://github.com/jesserobertson/explore_australia/blob/master/resources/layer_examples.png?raw=true)
 
 ### `get_coverages` CLI
 
