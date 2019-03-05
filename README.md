@@ -48,6 +48,8 @@ To clean this up and remove deposits that are unlikely to be useful targets we'v
 
 and provided the latitude and longitude of these deposits in WGS84 longitude/latitude (epsg:4326).
 
+
+
 ## Getting geophysical coverage data
 
 Most of the geophysical data for all of Australia is pretty big so we've created a couple of Python functions to pull the data from their [web coverage service endpoints](http://nci.org.au/services/nci-national-research-data-collection/geosciences/) - basically a little wrapper around [owslib](https://github.com/geopython/OWSLib).
@@ -103,3 +105,4 @@ Geoscience Australia provides
 The data is available on data.gov.auYou can download the data directly from [here](https://d28rz98at9flks.cloudfront.net/74619/74619_1M_shapefiles.zip). You can see a rendered version [here](https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/73360).
 
 We've provided a jupyter notebook which you can use to pull out the geology for a particular bounding box.
+
