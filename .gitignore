@@ -1,5 +1,7 @@
 jupyter/shapefiles
 jupyter/*.zip
+jupyter/test_data
+jupyter/test_output
 
 ## Python ignores
 # Byte-compiled / optimized / DLL files
