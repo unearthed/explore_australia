@@ -64,14 +64,22 @@ def get_stamp(output, wcs, stamp, centre, angle, distance, npoints=500):
             _temp.unlink()
 
 @click.command()
-@click.option('--lat', type=float, help='latitude')
-@click.option('--lon', type=float, help='longitude')
-@click.option('--distance', type=int, default=25, help='scale in km')
-@click.option('--angle', type=float, default=None, help='angle to rotate')
+@click.option('--lat', type=float,
+    help='Central latitude of the coverage, in degrees')
+@click.option('--lon', type=float,
+    help='Central longitude of the coverage, in degrees')
+@click.option('--distance', type=int, default=25,
+    help='The approximate length of the sides of the coverage (in km)')
+@click.option('--angle', type=float, default=None,
+    help='An angle to rotate the box, in degrees')
 @click.argument('name')
 def get_coverages(name, lat, lon, angle, distance=25):
     """
     Get coverages for a given centre and angle
+
+    Note that because we're getting a square on the surface of the earth,
+    it might not be an exact square! Distances are approximate, depending
+    on latitude.
     """
     # Construct stamp
     centre = geometry.Point(lon, lat)

@@ -1,0 +1,23 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+            "folder_exclude_patterns": [
+                "*.egg*",
+                "htmlcov",
+                "__pycache__",
+                ".ipynb_checkpoints",
+                ".cache",
+                ".pytest_cache",
+                "test-reports",
+                "build",
+                "dist"
+            ],
+            "file_exclude_patterns": [
+                ".coverage.*",
+                ".coverage"
+            ]
+		}
+	]
+}

@@ -67,7 +67,7 @@ setup(
     # Some entry points for running CLIs
     entry_points={
         'console_scripts': [
-            'explorer_coverage = explore_australia:cli.get_coverages',
+            'get_coverages = explore_australia:cli.get_coverages',
         ],
     }
 )

@@ -29,10 +29,10 @@ running install
 Successfully installed explore_australia
 ```
 
-This should install the python package and also the `explorer_coverage` CLI tool.
+This should install the python package and also the `get_coverages` CLI tool.
 
 ```bash
-$ which explorer_coverage
+$ which get_coverages
 # should show where this is installed, probably in .../conda/bin
 ```
 
@@ -61,24 +61,29 @@ All of the endpoints are stored in `explorer_australia/endpoints.py` (note you c
 
 ### `get_coverages` CLI
 
-You can use the CLI to pull out aligned coverages for any piece of Australia that you'd like (for example over deposit locations). This should be useful for generating test and train datasets for building your models.
+You can use the CLI to pull out aligned coverages for any piece of Australia that you'd like (for example over deposit locations). This should be useful for generating exploratory, test and train datasets for building your models.
 
 If you've got a particular area that you'd like to look at (e.g. over a known deposit), then you can pull out a box of (roughly) size `distance` using:
 
 ```bash
-$ explorer_coverage --help
-Usage: explorer_coverage [OPTIONS] NAME
+$ get_coverages --help
+Usage: get_coverages [OPTIONS] NAME
 
   Get coverages for a given centre and angle
 
+  Note that because we are getting a square on the surface of the earth, it
+  might not be an exact square! Distances are approximate, depending on
+  latitude.
+
 Options:
-  --lat FLOAT         latitude
-  --lon FLOAT         longitude
-  --distance INTEGER  scale in km
-  --angle FLOAT       angle to rotate
+  --lat FLOAT         Central latitude of the coverage, in degrees
+  --lon FLOAT         Central longitude of the coverage, in degrees
+  --distance INTEGER  The approximate length of the sides of the coverage (in
+                      km)
+  --angle FLOAT       An angle to rotate the box, in degrees
   --help              Show this message and exit.
 
-$ explorer_coverage --lon=122.169999 --lat=-32.42 --angle=239 test_output
+$ get_coverages --lon=122.169999 --lat=-32.42 --angle=239 test_output
 # will loop through and grab tifs from WCS
 
 # Show all the downloaded geotiffs
