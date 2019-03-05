@@ -1,0 +1,23 @@
+name: explorer
+
+dependencies:
+  - python=3.6
+  - shapely
+  - fiona
+  - rasterio
+  - numpy
+  - scipy
+  - owslib
+  - ipykernel
+  - matplotlib
+  - geopandas
+  - scikit-learn
+  - pytest
+  - pytest-runner
+  - pytest-cov
+  - coverage
+  - pylint
+  - pip:
+    - pint
+    - tqdm
+    - -e .
