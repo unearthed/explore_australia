@@ -108,3 +108,9 @@ venv.bak/
 .mypy_cache/
 
 \.DS_Store
+
+explore_australia\.sublime-workspace
+
+tests/reports/coverage\.html/
+
+tests/reports/test-output\.junit\.xml
