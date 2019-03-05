@@ -43,6 +43,7 @@ As targets, we've provided 3034 deposit locations gleaned from Geoscience Austra
 To clean this up and remove deposits that are unlikely to be useful targets we've done the following:
 - Remove 'uninteresting' or difficult to predict commodity types like opal, coal, diamond etc
 - Concatenated the commodity types into some larger groups for prediction purposes (e.g. illmenite -> Ti, hematite -> Fe)
+- Combined rare-earth (Sc, Y, La, Ce, Pr, Nd, Pm, Sm, Eu, Gd, Tb, Dy, Ho, Er, Yb, Lu, REO, REE, Xen, Mnz) and platinum-group element (PGE, Pt, Pd, Os, Rh, In, Ir, Re, Ru, Nb) resources into `REE` and `PGE` resources respectively
 - Streamlined the commodity type labels into a semicolon-delimited list (;)
 
 and provided the latitude and longitude of these deposits in WGS84 longitude/latitude (epsg:4326).
