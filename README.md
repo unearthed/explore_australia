@@ -36,9 +36,9 @@ $ which get_coverages
 # should show where this is installed, probably in .../conda/bin
 ```
 
-## Cleaned deposit locations
+## Targets: cleaned deposit locations
 
-As targets, we've provided 3034 deposit locations gleaned from Geoscience Australia's [Identified Mineral Resources database](http://www.ga.gov.au/scientific-topics/minerals/mineral-resources-and-advice/aimr). They're available as `data/deposit_locations.csv` and `data/deposit_locations.geo.json` respectively.
+As targets, we've provided 3034 deposit locations gleaned from Geoscience Australia's [Identified Mineral Resources database](http://www.ga.gov.au/scientific-topics/minerals/mineral-resources-and-advice/aimr). They're available as `data/deposit_locations.csv` and `data/deposit_locations.geo.json` respectively. Geoscience Australia also has a nice [poster showing these locations around Australia](http://www.ga.gov.au/webtemp/image_cache/GA6886.pdf).
 
 To make it easier to target commodity types and remove deposits that are unlikely to be useful targets we've done the following:
 - Remove very rare deposits like diamond or 'uninteresting' deposits like opal or coal (who cares about silica or carbon?)
@@ -49,7 +49,7 @@ and provided the latitude and longitude of these deposits in WGS84 longitude/lat
 
 ![Deposit locations across Australia](https://github.com/jesserobertson/explore_australia/blob/master/resources/deposit_locations.png?raw=true)
 
-## Getting geophysical coverage data
+## Covariates: getting geophysical coverage data
 
 Most of the geophysical data for all of Australia is pretty big so we've created a couple of Python functions to pull the data from their [web coverage service endpoints](http://nci.org.au/services/nci-national-research-data-collection/geosciences/) - basically a little wrapper around [owslib](https://github.com/geopython/OWSLib).
 
@@ -99,10 +99,24 @@ The CLI code is in `explore_australia/cli.py` if you want to see the regridding 
 
 We've also provided a Jupyter notebook showing you how to use rasterio to read the data once you've downloaded it.
 
-# Geological mapping data
+## Covariates: Geological mapping data
 
-Geoscience Australia provides
+Geoscience Australia provides national coverages of surface geology. The data is available on [data.gov.au](https://data.gov.au/dataset/ds-dga-48fe9c9d-2f10-49d2-bd24-ac546662c4ec/details), with a direct download [here](https://d28rz98at9flks.cloudfront.net/74619/74619_1M_shapefiles.zip) (about a Gb of shape files so we haven't just included here). You can see a rendered version [here](https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/73360). There are seperate layers for geological unit polygons, linear features (e.g. faults, shear zones and dykes) and contacts. There are a lot of attributes to dig into, including age, lithology, history and some chemistry. The geological data comes with extensive documentation on the meanings of terms, and semantic identifiers (via GeoSciML and other standards) for ages, lithologies and other geological aspects.
 
-The data is available on data.gov.auYou can download the data directly from [here](https://d28rz98at9flks.cloudfront.net/74619/74619_1M_shapefiles.zip). You can see a rendered version [here](https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/73360).
+Some of the state surveys (GSWA in particular) provide more detailed geology (down to 1:100k scale) with the covering rocks removed, seperate regolith (cover) maps, as well as extra information about tectonic history etc. You might be interested in using these datasets for the deposits in a single state to see whether they improve your predictions or change your certainty of existing predictions. If this sounds like you, head over to the WA state data portal: https://catalogue.data.wa.gov.au/dataset?q=geology.
 
-We've provided a jupyter notebook which you can use to pull out the geology for a particular bounding box.
+We've provided a jupyter notebook which you can use to pull out the geology for a particular bounding box. [GeoPandas](https://github.com/geopandas/geopandas) and [shapely](https://github.com/Toblerity/Shapely) make this very easy in Python.
+
+![Geology polygons](https://github.com/jesserobertson/explore_australia/blob/master/resources/geology_polygons.png?raw=true)
+
+## Covariates: Other data?
+
+There's nothing that's stopping you from using other data to train or validate your models if you think it will make for a better outcome or submission. Make sure you also take a look at the data portals of the other state and federal geological surveys for tons of useful data. For starters, try:
+- [Geological Survey of South Australia](https://map.sarig.sa.gov.au)
+- [Geoscience Australia Data and Publications](http://www.ga.gov.au/data-pubs)
+- [Geological Survey of Western Australia](http://www.dmp.wa.gov.au/Geological-Survey/Geological-Survey-262.aspx)
+- [National map](https://nationalmap.gov.au) - you can use this to find other Web Coverage Services (WCS) to plug into the data getter.
+
+## Any issues?
+
+Any problems, ask a question on the forum or in the Unearthed community slack. Feel free to submit pull requests if you find a bug in this repo.
