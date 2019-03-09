@@ -57,6 +57,46 @@ and provided the latitude and longitude of these deposits in WGS84 longitude/lat
 
 Most of the geophysical data for all of Australia is pretty big so we've created a couple of Python functions to pull the data from their [web coverage service endpoints](http://nci.org.au/services/nci-national-research-data-collection/geosciences/) - basically a little wrapper around [owslib](https://github.com/geopython/OWSLib).
 
+The relevant functions are all in `explore_australia/stamps.py`. The main ones are `get_coverages` and `get_coverages_parallel`. Use them like so:
+
+```python
+>>> get_coverages(
+        name=prominent_hill,  # a name for the data/stamp area
+        lat=-32.42,           # box central latitude
+        lon=122.169999,       # box central longitude
+        angle=239,            # optional rotation about the box centre
+        distance=25           # box side length in km
+    )
+# will loop through and grab tifs from WCS
+```
+
+After running this all your coverages will be under a folder called `prominent_hill`, sorted by type.
+
+For the parallel get function, just make a pandas DataFrame with the following columns:
+
+```python
+>>> import pandas
+
+>>> stamps = pandas.read_csv('my_stamp_locations.csv')  # or whatever you like
+
+>>> stamps.head()
+         id    rotation  centre_longitude  centre_latitude
+0       foo           0               147              -36
+1       bar          23               125              -18
+```
+
+and you can pass this off to the get_coverages which will get each row's coverage in parallel:
+
+```python
+>>> from explore_australia.stamp import get_coverages_parallel
+
+>>> get_coverages_parallel(stamps)
+Loading futures: 100%|██████████| 2/2 [00:00<00:00, 163.23it/s]
+Collecting futures: 100%|██████████| 2/2 [01:26<00:00, 29.58s/it]
+```
+
+Depending on your machine/network connection you might want to tweak the number of workers.
+
 All of the endpoints are stored in `explorer_australia/endpoints.py` (note you can also load these in any decent GIS package as well as see them in [nationalmap.gov.au](https://nationalmap.gov.au)). We've provided endpoints for continent-wide magnetics (TMI and VRTP), gravity (isostatic residual and bouger anomaly), a number of ASTER products (which map surface mineralogy at a 30 m scale), and radiometric data (K, Th, U and total dose).
 
 ![Coverage examples](https://github.com/jesserobertson/explore_australia/blob/master/resources/layer_examples.png?raw=true)
