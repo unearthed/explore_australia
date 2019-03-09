@@ -8,4 +8,4 @@
 from ._version import __version__
 from .coverage import CoverageService
 from .geometry import make_box
-from . import coverage, geometry, vector, utilities, cli
+from . import coverage, geometry, vector, utilities, cli, stamp
