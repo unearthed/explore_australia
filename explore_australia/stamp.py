@@ -116,15 +116,20 @@ def get_coverages(name, lat, lon, angle, distance, no_crs, show_progress=True):
             folder.mkdir(parents=True)
 
     # Download data
-    with tqdm(total=TOTAL_COVERAGES, desc='Downloading coverages') \
-         if show_progress else None as pbar:
+    if show_progress:
+        with tqdm(total=TOTAL_COVERAGES, desc='Downloading coverages') as pbar:
+            for endpoints, folder in folders:
+                for layer, endpoint in endpoints.items():
+                    output_tif = folder / f'{layer}.tif'
+                    if not output_tif.exists():
+                        get_stamp(output_tif, endpoint, **kwargs)
+                    pbar.update(1)
+    else:
         for endpoints, folder in folders:
             for layer, endpoint in endpoints.items():
                 output_tif = folder / f'{layer}.tif'
                 if not output_tif.exists():
                     get_stamp(output_tif, endpoint, **kwargs)
-                if show_progress:
-                    pbar.update(1)
 
 def get_coverages_parallel(stamps, logfile='get_stamps.log'):
     """
