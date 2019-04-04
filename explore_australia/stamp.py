@@ -20,19 +20,18 @@ from .raster import rasterio_reprojection_meta
 from .geometry import make_stamp
 from .endpoints import GRAVITY, MAGNETICS, RADMAP, ASTER, TOTAL_COVERAGES
 
-def get_stamp(output, wcs, stamp, centre, angle, distance,
+def get_stamp(output, wcs, stamp, crs, distance,
               npoints=500, remove_crs=False):
     """
     Get the raster in a given stamp area from a WCS
 
-    Warps the raster into a locally uniform oblique Mercator projection
+    Warps the raster into a local CRS
 
     Parameters:
         output - the mane of the output tif file
         wcs - the URL pointing to the WCS endpoint
         stamp - the stamp to use to crop the data
-        centre - the centre of the box, given as a shapely Point object
-        angle - the angle to rotate the box through, in degrees
+        crs - the output local crs for the raster
         distance - the approximate length of the sides of the box (in km)
         npoints - the number of points per side in the new stamp
         remove_crs - if True, remove coordinate reference system before writing
@@ -45,9 +44,8 @@ def get_stamp(output, wcs, stamp, centre, angle, distance,
         # Construct output metadata
         width = height = npoints
         output_meta = rasterio_reprojection_meta(
+            crs=crs,
             distance=distance,
-            centre=centre,
-            angle=angle,
             width=width,
             height=height
         )
@@ -75,7 +73,7 @@ def get_stamp(output, wcs, stamp, centre, angle, distance,
         if _temp.exists():
             _temp.unlink()
 
-def get_coverages(name, lat, lon, angle, distance, no_crs, show_progress=True):
+def get_coverages(name, crs, stamp, distance=25, no_crs=True, show_progress=True):
     """
     Get coverages for a given centre and angle
 
@@ -84,19 +82,16 @@ def get_coverages(name, lat, lon, angle, distance, no_crs, show_progress=True):
     on latitude.
 
     Parameters:
-        lat - Central latitude of the coverage, in degrees
-        lon - Central longitude of the coverage, in degrees
+        crs - the local crs for the stamp
+        stamp - the geometry for the stamp
         distance - The approximate length of the sides of the coverage (in km)
         angle - An angle to rotate the box, in degrees from north
         no_crs - if True, remove CRS from data
         show_progress - if True, show a progress bar
     """
-    # Construct stamp
-    centre = geometry.Point(lon, lat)
-    stamp = make_stamp(centre, angle=angle, distance=distance)
+    # Contruct kwargs
     kwargs = {
-        'centre': centre,
-        'angle': angle,
+        'crs': crs,
         'distance': distance,
         'stamp': stamp
     }
@@ -136,8 +131,8 @@ def get_coverages_parallel(stamps, logfile='get_stamps.log'):
     Get stamp raster data in parallel using a threadpool
 
     Parameters:
-        stamps - a dataframe with 'id', 'centre_latitude', 'centre_longitude'
-            and 'rotation' columns to generate all the stamps
+        stamps - a geodataframe with 'id', 'local_projection'
+            and 'geometry' columns containing stamp info
     """
     # Some info about how we're going to run
     total_stamps = len(stamps)
@@ -153,9 +148,8 @@ def get_coverages_parallel(stamps, logfile='get_stamps.log'):
     # Map row to arguments
     row_to_kwargs = lambda row: dict(
         name=row.id,
-        lat=row.centre_latitude,
-        lon=row.centre_longitude,
-        angle=row.rotation,
+        crs=row.local_projection,
+        sttamp=row.geometry,
         distance=25,
         no_crs=True,
         show_progress=False
