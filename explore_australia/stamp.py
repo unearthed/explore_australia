@@ -158,7 +158,7 @@ def get_coverages_parallel(stamps, logfile='get_stamps.log'):
         crs=row.local_projection,
         stamp=row.geometry,
         distance=25,
-        no_crs=True,
+        no_crs=False,
         show_progress=False
     )
 
