@@ -18,7 +18,7 @@ import numpy as np
 from . import CoverageService
 from .raster import rasterio_reprojection_meta
 from .geometry import make_stamp
-from .endpoints import GRAVITY, MAGNETICS, RADMAP, ASTER, TOTAL_COVERAGES
+from .endpoints import GRAVITY, MAGNETICS, RADMAP, ASTER, ASTER_TAS, TOTAL_COVERAGES
 
 def get_stamp(output, wcs, stamp, crs, distance,
               npoints=500, remove_crs=False):
@@ -105,6 +105,7 @@ def get_coverages(name, crs, stamp, distance=25, no_crs=True, show_progress=True
         (MAGNETICS, root / 'geophysics' / 'magnetics'),
         (RADMAP, root / 'geophysics' / 'radiometrics'),
         (ASTER, root / 'remote_sensing' / 'aster'),
+        (ASTER_TAS, root / 'remote_sensing' / 'aster'),
     ]
     for _, folder in folders:
         if not folder.exists():
