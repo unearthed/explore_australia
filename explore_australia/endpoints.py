@@ -34,7 +34,7 @@ ASTER = {
     'thermal_infrared_silica_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/thermal/Aus_ASTER_L2EM_Silica_Index_reprojected.nc4'
 }
 ASTER_TAS = {
-    'aloh_group_composition': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_AlOH_Group_content_reprojected.nc4',
+    'aloh_group_composition': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_AlOH_Group_composition_reprojected.nc4',
     'ferrous_iron_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_Ferrous_Iron_index_reprojected.nc4',
     'opaque_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_Opaque_index_reprojected.nc4',
     'ferric_oxide_content': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_Ferric_Oxide_content_reprojected.nc4',
