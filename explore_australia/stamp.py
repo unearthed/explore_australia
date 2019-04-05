@@ -70,8 +70,11 @@ def get_stamp(output, wcs, stamp, crs, distance,
         with rasterio.open(output, 'w', **output_meta) as sink:
             sink.write(destination, 1)
     finally:
-        if _temp.exists():
-            _temp.unlink()
+        try:
+            if _temp.exists():
+                _temp.unlink()
+        except NameError:
+            pass
 
 def get_coverages(name, crs, stamp, distance=25, no_crs=True, show_progress=True):
     """
