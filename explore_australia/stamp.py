@@ -107,7 +107,7 @@ def get_coverages(name, crs, stamp, distance=25, no_crs=True, show_progress=True
         (GRAVITY, root / 'geophysics' / 'gravity'),
         (MAGNETICS, root / 'geophysics' / 'magnetics'),
         (RADMAP, root / 'geophysics' / 'radiometrics'),
-        (ASTER, root / 'remote_sensing' / 'aster'),
+        # (ASTER, root / 'remote_sensing' / 'aster'),
         (ASTER_TAS, root / 'remote_sensing' / 'aster'),
     ]
     for _, folder in folders:
@@ -128,7 +128,10 @@ def get_coverages(name, crs, stamp, distance=25, no_crs=True, show_progress=True
             for layer, endpoint in endpoints.items():
                 output_tif = folder / f'{layer}.tif'
                 if not output_tif.exists():
-                    get_stamp(output_tif, endpoint, **kwargs)
+                    try:
+                        get_stamp(output_tif, endpoint, **kwargs)
+                    except:
+                        continue
 
 def get_coverages_parallel(stamps, logfile='get_stamps.log'):
     """
