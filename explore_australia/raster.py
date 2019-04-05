@@ -23,7 +23,7 @@ def rasterio_reprojection_meta(crs, distance=10, width=250, height=250):
         height=height,
         transform=from_origin(
             -half * kilometres,
-            half * kilometres,
+            -half * kilometres,
             distance * kilometres / (width - 1),
             distance * kilometres / (height - 1)
         ),
