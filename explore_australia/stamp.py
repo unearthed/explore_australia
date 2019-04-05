@@ -107,8 +107,8 @@ def get_coverages(name, crs, stamp, distance=25, no_crs=True, show_progress=True
         (GRAVITY, root / 'geophysics' / 'gravity'),
         (MAGNETICS, root / 'geophysics' / 'magnetics'),
         (RADMAP, root / 'geophysics' / 'radiometrics'),
-        # (ASTER, root / 'remote_sensing' / 'aster'),
-        (ASTER_TAS, root / 'remote_sensing' / 'aster'),
+        (ASTER, root / 'remote_sensing' / 'aster'),
+        #(ASTER_TAS, root / 'remote_sensing' / 'aster'),
     ]
     for _, folder in folders:
         if not folder.exists():
