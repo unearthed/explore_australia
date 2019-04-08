@@ -91,26 +91,6 @@ class Stamp:
             crs=self.rasterio_crs
         )
 
-def proj_to_stamp(proj):
-    "Convert an orthogonal Mercator projection to a stamp"
-    # Convert proj string to a dict
-    kwargs = {}
-    for defn in (s.strip().split('=') for s in proj.split('+')):
-        try:
-            kwargs[defn[0]] = defn[1]
-        except IndexError:
-            if defn[0]:
-                kwargs[defn[0]] = True
-
-    # Get the values we care about
-    return Stamp(
-        lat=float(kwargs['lat_0']),
-        lon=float(kwargs['lonc']),
-        angle=float(kwargs['alpha']),
-        distance=25,
-        n_pixels=500
-    )
-
 def get_stamp(wcs, stamp, output='output.tif', remove_crs=False):
     """
     Get the raster in a given stamp area from a WCS
@@ -213,6 +193,26 @@ def get_coverages(name, stamp, no_crs=True, show_progress=True):
                     except:
                         continue
 
+def proj_to_stamp(proj):
+    "Convert an orthogonal Mercator projection to a stamp"
+    # Convert proj string to a dict
+    kwargs = {}
+    for defn in (s.strip().split('=') for s in proj.split('+')):
+        try:
+            kwargs[defn[0]] = defn[1]
+        except IndexError:
+            if defn[0]:
+                kwargs[defn[0]] = True
+
+    # Get the values we care about
+    return Stamp(
+        lat=float(kwargs['lat_0']),
+        lon=float(kwargs['lonc']),
+        angle=float(kwargs['alpha']),
+        distance=25,
+        n_pixels=500
+    )
+
 def get_coverages_parallel(stamps, logfile='get_stamps.log'):
     """
     Get stamp raster data in parallel using a threadpool
@@ -235,9 +235,7 @@ def get_coverages_parallel(stamps, logfile='get_stamps.log'):
     # Map row to arguments
     row_to_kwargs = lambda row: dict(
         name=row.id,
-        crs=row.local_projection,
         stamp=proj_to_stamp(row.local_projection),
-        distance=25,
         no_crs=False,
         show_progress=False
     )
