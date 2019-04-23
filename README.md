@@ -141,8 +141,8 @@ Options:
   --angle FLOAT       An angle to rotate the box, in degrees
   --help              Show this message and exit.
 
-$ get_coverages --lon=122.169999 --lat=-32.42 --angle=239 test_output
-# will loop through and grab tifs from WCS
+$ get_coverages --lat=-32.42 --lon=122.169 --angle=239 prominent_hill
+Downloading coverages: 100%|████████████████████████████| 19/19 [00:24<00:00,  1.58s/it]
 
 # Show all the downloaded geotiffs
 $ ls test_output/**/*
