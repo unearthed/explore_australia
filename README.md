@@ -60,14 +60,15 @@ Most of the geophysical data for all of Australia is pretty big so we've created
 The relevant functions are all in `explore_australia/stamps.py`. The main ones are `get_coverages` and `get_coverages_parallel`. Use them like so:
 
 ```python
+>>> from explore_australia.stamp import Stamp, get_coverages
+>>> stamp = Stamp(lat=-32.42, lon=122.169, angle=239, distance=25)  # make a stamp centered on Prominent Hill
 >>> get_coverages(
-        name=prominent_hill,  # a name for the data/stamp area
-        lat=-32.42,           # box central latitude
-        lon=122.169999,       # box central longitude
-        angle=239,            # optional rotation about the box centre
-        distance=25           # box side length in km
+        name='prominent_hill',  # a name for the data/stamp area
+        stamp=stamp,
+        no_crs=False,           # if true, will remove the CRS info
+        show_progress=True
     )
-# will loop through and grab tifs from WCS
+Downloading coverages: 100%|██████████| 19/19 [01:01<00:00,  3.53s/it]
 ```
 
 After running this all your coverages will be under a folder called `prominent_hill`, sorted by type.
