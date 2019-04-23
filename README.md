@@ -60,29 +60,45 @@ Most of the geophysical data for all of Australia is pretty big so we've created
 The relevant functions are all in `explore_australia/stamps.py`. The main ones are `get_coverages` and `get_coverages_parallel`. Use them like so:
 
 ```python
+>>> from explore_australia.stamp import Stamp, get_coverages
+
+>>> stamp = Stamp(lat=-32.42, lon=122.169, angle=239, distance=25)  # make a stamp centered on Prominent Hill
+
 >>> get_coverages(
-        name=prominent_hill,  # a name for the data/stamp area
-        lat=-32.42,           # box central latitude
-        lon=122.169999,       # box central longitude
-        angle=239,            # optional rotation about the box centre
-        distance=25           # box side length in km
+        name='prominent_hill',  # a name for the data/stamp area
+        stamp=stamp,
+        no_crs=False,           # if true, will remove the CRS info
+        show_progress=True
     )
-# will loop through and grab tifs from WCS
+Downloading coverages: 100%|██████████| 19/19 [01:01<00:00,  3.53s/it]
 ```
 
-After running this all your coverages will be under a folder called `prominent_hill`, sorted by type.
+After running this all your coverages will be under a folder called `prominent_hill`, sorted by type. If you remove the CRS information the local grid projection is stored in your original stamp object:
 
-For the parallel get function, just make a pandas DataFrame with the following columns:
+```python
+>>> stamp.crs
+'+proj=omerc +lat_0=-32.42 +lonc=122.169 +alpha=239 +k=1 +x_0=0 +y_0=0 +gamma=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+```
+
+For the parallel get function, just make a pandas DataFrame with 'id' and 'local_projection' columns. If you want to get the stamps that were used in the data science stream challenge, those are all in the data folder:
 
 ```python
 >>> import pandas
 
->>> stamps = pandas.read_csv('my_stamp_locations.csv')  # or whatever you like
+>>> locs = pandas.read_csv('data/stamp_locations.csv', nrows=2, dtype={'id': str})
 
->>> stamps.head()
-         id    rotation  centre_longitude  centre_latitude
-0       foo           0               147              -36
-1       bar          23               125              -18
+>>> locs.keys()
+Index(['id', 'age', 'comment', 'commodities_string', 'original_id', 'latitude',
+       'longitude', 'name', 'offset_azimuth', 'offset_distance', 'rotation',
+       'centre_longitude', 'centre_latitude', 'local_projection',
+       'stratification_label', 'commodity_string', 'geometry',
+       'commodity_locations'],
+      dtype='object')
+
+>>> locs[['id', 'local_projection']]
+         id                                   local_projection
+0  57941438  +proj=omerc +lat_0=-36.10360962430914 +lonc=14...
+1  21418444  +proj=omerc +lat_0=-18.713172195007903 +lonc=1...
 ```
 
 and you can pass this off to the get_coverages which will get each row's coverage in parallel:
@@ -90,9 +106,9 @@ and you can pass this off to the get_coverages which will get each row's coverag
 ```python
 >>> from explore_australia.stamp import get_coverages_parallel
 
->>> get_coverages_parallel(stamps)
-Loading futures: 100%|██████████| 2/2 [00:00<00:00, 163.23it/s]
-Collecting futures: 100%|██████████| 2/2 [01:26<00:00, 29.58s/it]
+>>> get_coverages_parallel(locs)
+Loading futures: 100%|██████████| 2/2 [00:00<00:00, 122.91it/s]
+Collecting futures: 100%|██████████| 2/2 [01:47<00:00, 73.31s/it] 
 ```
 
 Depending on your machine/network connection you might want to tweak the number of workers.
@@ -125,8 +141,8 @@ Options:
   --angle FLOAT       An angle to rotate the box, in degrees
   --help              Show this message and exit.
 
-$ get_coverages --lon=122.169999 --lat=-32.42 --angle=239 test_output
-# will loop through and grab tifs from WCS
+$ get_coverages --lat=-32.42 --lon=122.169 --angle=239 prominent_hill
+Downloading coverages: 100%|████████████████████████████| 19/19 [00:24<00:00,  1.58s/it]
 
 # Show all the downloaded geotiffs
 $ ls test_output/**/*

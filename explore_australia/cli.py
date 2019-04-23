@@ -8,7 +8,7 @@ import logging
 
 import click
 
-from .stamp import get_coverages
+from .stamp import get_coverages, Stamp
 
 LOGGER = logging.getLogger('explore_australia')
 
@@ -27,8 +27,8 @@ def main(name, lat, lon, angle, distance, no_crs):
     it might not be an exact square! Distances are approximate, depending
     on latitude.
     """
-    get_coverages(name=name, lat=lat, lon=lon, angle=angle, distance=distance,
-                  no_crs=no_crs, show_progress=True)
+    stamp = Stamp(lat=lat, lon=lon, angle=angle or 0, distance=distance)
+    get_coverages(name=name, stamp=stamp, no_crs=no_crs, show_progress=True)
 
 if __name__ == '__main__':
     main()

@@ -33,6 +33,21 @@ ASTER = {
     'thermal_infrared_gypsum_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/thermal/Aus_ASTER_L2EM_Gypsum_Index_reprojected.nc4',
     'thermal_infrared_silica_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/thermal/Aus_ASTER_L2EM_Silica_Index_reprojected.nc4'
 }
+ASTER_TAS = {
+    'aloh_group_composition': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_AlOH_Group_composition_reprojected.nc4',
+    'ferrous_iron_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_Ferrous_Iron_index_reprojected.nc4',
+    'opaque_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_Opaque_index_reprojected.nc4',
+    'ferric_oxide_content': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_Ferric_Oxide_content_reprojected.nc4',
+    # 'feoh_group_content': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_FeOH_Group_content_reprojected.nc4',
+    'kaolin_group_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_Kaolin_group_index_reprojected.nc4',
+    'tir_quartz_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/thermal/Aus_ASTER_L2EM_Quartz_Index_reprojected.nc4',
+    'mgoh_group_content': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_MgOH_group_content_reprojected.nc4',
+    # 'mgoh_group_composition': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_MgOH_group_composition_reprojected.nc4',
+    'ferrous_iron_content': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_Ferrous_iron_in_MgOH_content_reprojected.nc4',
+    'aloh_groun_content': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/vnir/Tasmania/Tas_AlOH_group_content_reprojected.nc4',
+    'thermal_infrared_gypsum_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/thermal/Aus_ASTER_L2EM_Gypsum_Index_reprojected.nc4',
+    'thermal_infrared_silica_index': 'http://dap-wms.nci.org.au/thredds/wcs/wx7/aster/thermal/Aus_ASTER_L2EM_Silica_Index_reprojected.nc4'
+}
 
 GRAVITY = {
     'isostatic_residual_gravity_anomaly': 'http://dap-wms.nci.org.au/thredds/wcs/rr2/geophysics/onshore_geodetic_Isostatic_Residual_v2_2016/onshore_geodetic_Isostatic_Residual_v2_2016.nc',

@@ -8,13 +8,11 @@
 from rasterio.transform import from_origin
 from rasterio.crs import CRS
 
-from .utilities import omerc_projection
-
-def rasterio_reprojection_meta(centre, angle, distance=10, width=250, height=250):
+def rasterio_reprojection_meta(crs, distance=10, width=250, height=250):
     """
     Return a custom projection and grid transform rotated through some angle
     """
-    km = 1000
+    kilometres = 1000
     half = distance / 2
     return dict(
         driver='GTiff',
@@ -24,10 +22,10 @@ def rasterio_reprojection_meta(centre, angle, distance=10, width=250, height=250
         width=width,
         height=height,
         transform=from_origin(
-            -half * km,
-            half * km,
-            distance * km / (width - 1),
-            distance * km / (height - 1)
+            -half * kilometres,
+            half * kilometres,
+            distance * kilometres / (width - 1),
+            distance * kilometres / (height - 1)
         ),
-        crs=CRS.from_string(omerc_projection(centre, angle))
+        crs=CRS.from_string(crs)
     )

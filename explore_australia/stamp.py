@@ -12,27 +12,96 @@ import logging
 from tqdm import tqdm
 from shapely import geometry
 import rasterio
-from rasterio import warp
-import numpy as np
 
-from . import CoverageService
-from .raster import rasterio_reprojection_meta
+from . import CoverageService, endpoints
 from .geometry import make_stamp
-from .endpoints import GRAVITY, MAGNETICS, RADMAP, ASTER, TOTAL_COVERAGES
 
-def get_stamp(output, wcs, stamp, centre, angle, distance,
-              npoints=500, remove_crs=False):
+class Stamp:
+
+    """
+    Class to manage stamp geometry
+
+    Parameters:
+        lon, lat - the longitude and latitude of the centre of the stamp.
+        angle - an angle through which the stamp is rotated.
+        distance - the length of the side of the stamp.
+        n_pixels - the number of points in a raster in the stamp. Optional,
+            defaults to 500 pixels. If one-dimensional (e.g. `n_pixels=500`),
+            sets the number to be the same in both dimensions, if two-dimensional
+            (e.g. `n_pixels=(350, 400)`), sets the pixels seperately. Optional,
+            defaults to 500.
+    """
+
+    def __init__(self, lon, lat, angle=0, distance=25, n_pixels=500):
+        self.lon, self.lat = lon, lat
+        self.angle = angle
+        self.distance = distance
+        try:
+            self.width, self.height = n_pixels
+        except TypeError:
+            self.width, self.height = n_pixels, n_pixels
+
+        # Set up geometry
+        self.centre = geometry.Point(self.lon, self.lat)
+        self.geometry = make_stamp(centre=self.centre, angle=self.angle, distance=self.distance)
+
+        # Set up other stuff - gets calculated on the fly
+        self._crs, self._transform = None, None
+
+    @property
+    def crs(self):
+        "Return a local oblique Mercator CRS"
+        if self._crs is None:
+            self._crs = (
+                f"+proj=omerc +lat_0={self.centre.y} +lonc={self.centre.x} +alpha={self.angle} "\
+                "+k=1 +x_0=0 +y_0=0 +gamma=0 "
+                "+ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+            )
+        return self._crs
+
+    @property
+    def transform(self):
+        "Return a raster transform"
+        if self._transform is None:
+            kilometres = 1000  # from crs, everything needs to be in m
+            half = self.distance / 2
+            self._transform = rasterio.transform.from_origin(
+                -half * kilometres,
+                half * kilometres,
+                self.distance * kilometres / (self.width - 1),
+                self.distance * kilometres / (self.height - 1)
+            )
+        return self._transform
+
+    @property
+    def rasterio_crs(self):
+        "Return the CRS as a rasterio object"
+        return rasterio.crs.CRS.from_string(self.crs)
+
+    def get_tiff_metadata(self, dtype=None, nodata=None, count=1):
+        "Return the metadata required to generate a reprojected geotiff"
+        return dict(
+            driver='GTiff',
+            dtype=dtype or 'float32',
+            nodata=nodata,
+            count=count,
+            width=self.width,
+            height=self.height,
+            transform=self.transform,
+            crs=self.rasterio_crs
+        )
+
+def get_stamp(wcs, stamp, output='output.tif', remove_crs=False):
     """
     Get the raster in a given stamp area from a WCS
 
-    Warps the raster into a locally uniform oblique Mercator projection
+    Warps the raster into a local CRS
 
     Parameters:
-        output - the mane of the output tif file
+        output - the name of the output tif file
         wcs - the URL pointing to the WCS endpoint
         stamp - the stamp to use to crop the data
-        centre - the centre of the box, given as a shapely Point object
-        angle - the angle to rotate the box through, in degrees
+        crs - the output local crs for the raster
         distance - the approximate length of the sides of the box (in km)
         npoints - the number of points per side in the new stamp
         remove_crs - if True, remove coordinate reference system before writing
@@ -40,42 +109,36 @@ def get_stamp(output, wcs, stamp, centre, angle, distance,
     # Get data
     try:
         serv = CoverageService(wcs)
-        _temp = pathlib.Path(serv(stamp.bounds))
-
-        # Construct output metadata
-        width = height = npoints
-        output_meta = rasterio_reprojection_meta(
-            distance=distance,
-            centre=centre,
-            angle=angle,
-            width=width,
-            height=height
-        )
+        _temp = pathlib.Path(serv(stamp.geometry.bounds))
 
         # Warp input to output
-        destination = np.empty((output_meta['width'], output_meta['height']),
-                               dtype=np.float32)
-        with rasterio.open(_temp, 'r') as src:
-            warp.reproject(
-                source=src.read(1),
-                destination=destination,
-                src_transform=src.meta['transform'],
-                src_crs=src.meta['crs'],
-                dst_transform=output_meta['transform'],
-                dst_crs=output_meta['crs'],
-                resampling=warp.Resampling.nearest
+        with rasterio.open(_temp, 'r') as src, \
+             rasterio.open(output, 'w', **stamp.get_tiff_metadata()) as sink:
+            src_band = rasterio.band(src, 1)
+            dst_band = rasterio.band(sink, 1)
+            rasterio.warp.reproject(
+                source=src_band,
+                destination=dst_band,
+                resampling=rasterio.warp.Resampling.nearest
             )
 
         # Dump output to file without CRS info
         if remove_crs:
-            output_meta['crs'] = None
-        with rasterio.open(output, 'w', **output_meta) as sink:
-            sink.write(destination, 1)
+            kwargs = stamp.get_tiff_metadata()
+            kwargs['crs'] = None
+            with rasterio.open(output, 'r') as src:
+                data = src.read(1)
+            with rasterio.open(output, 'w', **kwargs) as sink:
+                sink.write(data, 1)
+        return output
     finally:
-        if _temp.exists():
-            _temp.unlink()
+        try:
+            if _temp.exists():
+                _temp.unlink()
+        except NameError:
+            pass
 
-def get_coverages(name, lat, lon, angle, distance, no_crs, show_progress=True):
+def get_coverages(name, stamp, no_crs=True, show_progress=True):
     """
     Get coverages for a given centre and angle
 
@@ -84,32 +147,21 @@ def get_coverages(name, lat, lon, angle, distance, no_crs, show_progress=True):
     on latitude.
 
     Parameters:
-        lat - Central latitude of the coverage, in degrees
-        lon - Central longitude of the coverage, in degrees
+        crs - the local crs for the stamp
+        stamp - the geometry for the stamp
         distance - The approximate length of the sides of the coverage (in km)
         angle - An angle to rotate the box, in degrees from north
         no_crs - if True, remove CRS from data
         show_progress - if True, show a progress bar
     """
-    # Construct stamp
-    centre = geometry.Point(lon, lat)
-    stamp = make_stamp(centre, angle=angle, distance=distance)
-    kwargs = {
-        'centre': centre,
-        'angle': angle,
-        'distance': distance,
-        'stamp': stamp
-    }
-    if no_crs:
-        kwargs['remove_crs'] = True
-
-    # Construct folder structure
+    # Contruct endpoints and folders
     root = pathlib.Path(name)
     folders = [
-        (GRAVITY, root / 'geophysics' / 'gravity'),
-        (MAGNETICS, root / 'geophysics' / 'magnetics'),
-        (RADMAP, root / 'geophysics' / 'radiometrics'),
-        (ASTER, root / 'remote_sensing' / 'aster'),
+        (endpoints.GRAVITY, root / 'geophysics' / 'gravity'),
+        (endpoints.MAGNETICS, root / 'geophysics' / 'magnetics'),
+        (endpoints.RADMAP, root / 'geophysics' / 'radiometrics'),
+        (endpoints.ASTER, root / 'remote_sensing' / 'aster'),
+        #(endpoints.ASTER_TAS, root / 'remote_sensing' / 'aster'),
     ]
     for _, folder in folders:
         if not folder.exists():
@@ -117,27 +169,57 @@ def get_coverages(name, lat, lon, angle, distance, no_crs, show_progress=True):
 
     # Download data
     if show_progress:
-        with tqdm(total=TOTAL_COVERAGES, desc='Downloading coverages') as pbar:
-            for endpoints, folder in folders:
-                for layer, endpoint in endpoints.items():
+        failed = []
+        with tqdm(total=endpoints.TOTAL_COVERAGES, desc='Downloading coverages') as pbar:
+            for wcses, folder in folders:
+                for layer, wcs in wcses.items():
                     output_tif = folder / f'{layer}.tif'
                     if not output_tif.exists():
-                        get_stamp(output_tif, endpoint, **kwargs)
+                        try:
+                            get_stamp(wcs=wcs, stamp=stamp, output=output_tif, remove_crs=no_crs)
+                        except:
+                            failed.append([wcs, stamp.centre])
                     pbar.update(1)
+        if failed:
+            for wcs, centre in failed:
+                print(f'Failed to get {wcs} for ({centre})')
     else:
-        for endpoints, folder in folders:
-            for layer, endpoint in endpoints.items():
+        for wcses, folder in folders:
+            for layer, wcs in wcses.items():
                 output_tif = folder / f'{layer}.tif'
                 if not output_tif.exists():
-                    get_stamp(output_tif, endpoint, **kwargs)
+                    try:
+                        get_stamp(wcs=wcs, stamp=stamp, output=output_tif, remove_crs=no_crs)
+                    except:
+                        continue
+
+def proj_to_stamp(proj):
+    "Convert an orthogonal Mercator projection to a stamp"
+    # Convert proj string to a dict
+    kwargs = {}
+    for defn in (s.strip().split('=') for s in proj.split('+')):
+        try:
+            kwargs[defn[0]] = defn[1]
+        except IndexError:
+            if defn[0]:
+                kwargs[defn[0]] = True
+
+    # Get the values we care about
+    return Stamp(
+        lat=float(kwargs['lat_0']),
+        lon=float(kwargs['lonc']),
+        angle=float(kwargs['alpha']),
+        distance=25,
+        n_pixels=500
+    )
 
 def get_coverages_parallel(stamps, logfile='get_stamps.log'):
     """
     Get stamp raster data in parallel using a threadpool
 
     Parameters:
-        stamps - a dataframe with 'id', 'centre_latitude', 'centre_longitude'
-            and 'rotation' columns to generate all the stamps
+        stamps - a geodataframe with 'id' and 'local_projection'
+            columns containing stamp info
     """
     # Some info about how we're going to run
     total_stamps = len(stamps)
@@ -153,11 +235,8 @@ def get_coverages_parallel(stamps, logfile='get_stamps.log'):
     # Map row to arguments
     row_to_kwargs = lambda row: dict(
         name=row.id,
-        lat=row.centre_latitude,
-        lon=row.centre_longitude,
-        angle=row.rotation,
-        distance=25,
-        no_crs=True,
+        stamp=proj_to_stamp(row.local_projection),
+        no_crs=False,
         show_progress=False
     )
 
