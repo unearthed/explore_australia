@@ -61,7 +61,9 @@ The relevant functions are all in `explore_australia/stamps.py`. The main ones a
 
 ```python
 >>> from explore_australia.stamp import Stamp, get_coverages
+
 >>> stamp = Stamp(lat=-32.42, lon=122.169, angle=239, distance=25)  # make a stamp centered on Prominent Hill
+
 >>> get_coverages(
         name='prominent_hill',  # a name for the data/stamp area
         stamp=stamp,
@@ -71,19 +73,32 @@ The relevant functions are all in `explore_australia/stamps.py`. The main ones a
 Downloading coverages: 100%|██████████| 19/19 [01:01<00:00,  3.53s/it]
 ```
 
-After running this all your coverages will be under a folder called `prominent_hill`, sorted by type.
+After running this all your coverages will be under a folder called `prominent_hill`, sorted by type. If you remove the CRS information the local grid projection is stored in your original stamp object:
 
-For the parallel get function, just make a pandas DataFrame with the following columns:
+```python
+>>> stamp.crs
+'+proj=omerc +lat_0=-32.42 +lonc=122.169 +alpha=239 +k=1 +x_0=0 +y_0=0 +gamma=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
+```
+
+For the parallel get function, just make a pandas DataFrame with 'id' and 'local_projection' columns:
 
 ```python
 >>> import pandas
 
->>> stamps = pandas.read_csv('my_stamp_locations.csv')  # or whatever you like
+>>> locs = pandas.read_csv('stamp_locations.csv', nrows=2, dtype={'id': str})
 
->>> stamps.head()
-         id    rotation  centre_longitude  centre_latitude
-0       foo           0               147              -36
-1       bar          23               125              -18
+>>> locs.keys()
+Index(['id', 'age', 'comment', 'commodities_string', 'original_id', 'latitude',
+       'longitude', 'name', 'offset_azimuth', 'offset_distance', 'rotation',
+       'centre_longitude', 'centre_latitude', 'local_projection',
+       'stratification_label', 'commodity_string', 'geometry',
+       'commodity_locations'],
+      dtype='object')
+
+>>> locs[['id', 'local_projection']]
+         id                                   local_projection
+0  57941438  +proj=omerc +lat_0=-36.10360962430914 +lonc=14...
+1  21418444  +proj=omerc +lat_0=-18.713172195007903 +lonc=1...
 ```
 
 and you can pass this off to the get_coverages which will get each row's coverage in parallel:
@@ -91,9 +106,9 @@ and you can pass this off to the get_coverages which will get each row's coverag
 ```python
 >>> from explore_australia.stamp import get_coverages_parallel
 
->>> get_coverages_parallel(stamps)
-Loading futures: 100%|██████████| 2/2 [00:00<00:00, 163.23it/s]
-Collecting futures: 100%|██████████| 2/2 [01:26<00:00, 29.58s/it]
+>>> get_coverages_parallel(locs)
+Loading futures: 100%|██████████| 2/2 [00:00<00:00, 122.91it/s]
+Collecting futures: 100%|██████████| 2/2 [01:47<00:00, 73.31s/it] 
 ```
 
 Depending on your machine/network connection you might want to tweak the number of workers.
