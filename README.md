@@ -80,12 +80,12 @@ After running this all your coverages will be under a folder called `prominent_h
 '+proj=omerc +lat_0=-32.42 +lonc=122.169 +alpha=239 +k=1 +x_0=0 +y_0=0 +gamma=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
 ```
 
-For the parallel get function, just make a pandas DataFrame with 'id' and 'local_projection' columns:
+For the parallel get function, just make a pandas DataFrame with 'id' and 'local_projection' columns. If you want to get the stamps that were used in the data science stream challenge, those are all in the data folder:
 
 ```python
 >>> import pandas
 
->>> locs = pandas.read_csv('stamp_locations.csv', nrows=2, dtype={'id': str})
+>>> locs = pandas.read_csv('data/stamp_locations.csv', nrows=2, dtype={'id': str})
 
 >>> locs.keys()
 Index(['id', 'age', 'comment', 'commodities_string', 'original_id', 'latitude',
